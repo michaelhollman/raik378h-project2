@@ -3,7 +3,7 @@ While we were executing the A-Priori algorithm, we represented the items we had 
 
 2) Tuples were helpful because we were able to use them as "sets". Tuples were used, as opposed to some other data structure, because of their simplicity and immutability, allowing for value equality, as opposed to object equality. Using a dictionary allowed us to map each set to its count. Finally, LINQ extension methods for IEnumerable made it very easy to filter the dictionary by sets whose count was greater than our threshold of 3.
 
-3) Timing our program yeilded the following results:
+3) Timing our program yielded the following results:
          File read time: 424 milliseconds
          Data analysis runtime: 110 milliseconds
          Total Execution time: 534 milliseconds
