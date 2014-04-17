@@ -54,6 +54,7 @@
     <Content Include="code\basket.c" />
     <Content Include="code\basket.h" />
     <Content Include="code\test.c" />
+    <Content Include="output.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

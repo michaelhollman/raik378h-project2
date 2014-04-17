@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace raik378h_project2
@@ -12,7 +13,7 @@ namespace raik378h_project2
         static void Main(string[] args)
         {
             var watch = Stopwatch.StartNew();
-            
+
             var threshold = 3;
 
             Dictionary<int, int> oneItemDict = new Dictionary<int, int>();
@@ -24,6 +25,8 @@ namespace raik378h_project2
             {
                 allBaskets.Add(Basket.ReadFromFile(i));
             }
+
+            var fileReadTime = watch.ElapsedMilliseconds;
 
             foreach (Basket basket in allBaskets)
             {
@@ -98,16 +101,14 @@ namespace raik378h_project2
             threeItemDict = threeItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
 
             watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
+            var totalRunTime = watch.ElapsedMilliseconds;
 
-            threeItemDict.ToList().ForEach(three =>
-            {
-                // TODO -- also send this to output file?
-                Console.WriteLine(string.Format("({0}, {1}, {2}) {3}", three.Key.Item1, three.Key.Item2, three.Key.Item3, three.Value));
-            });
+            File.WriteAllLines(@"../../output.txt", threeItemDict.Select(d => string.Format("({0}, {1}, {2}) {3}", d.Key.Item1, d.Key.Item2, d.Key.Item3, d.Value)));
 
             Console.WriteLine("Number of 3 item sets: {0}", threeItemDict.Count);
-            Console.WriteLine("Execution time: {0} milliseconds", elapsedMs);
+            Console.WriteLine("File read time: {0}", fileReadTime);
+            Console.WriteLine("Data analysis runtime: {0}", totalRunTime - fileReadTime);
+            Console.WriteLine("Total Execution time: {0} milliseconds", totalRunTime);
 
             // wait hack
             Console.WriteLine();

@@ -1,14 +1,11 @@
-﻿which means that the first set contains the items with the ids 134, 247, and 981, and this set appears in 3 baskets. Please describe the way that you represent the data to facilitate your computing (2points), and the reason (2points). Also record the processing time (1 points), and analyse the complexity (2 points). 
+1) We first defined an object model in C# to represent baskets and items. These map pretty closely to the provided basket.h and item.h files we provided, but use native C#. 
+While we were executing the A-Priori algorithm, we represented the items we had found and their respective counts as a dictionary with keys of tuples containing the item ids (one item on the first pass, a tuple of two items on the second pass, and a tuple of three items on the third pass). The value of the dictionary was the number of times that that set had appeared in the baskets we processed. 
 
+2) Tuples were helpful because we were able to use them as "sets". Tuples were used, as opposed to some other data structure, because of their simplicity and immutability, allowing for value equality, as opposed to object equality. Using a dictionary allowed us to map each set to its count. Finally, LINQ extension methods for IEnumerable made it very easy to filter the dictionary by sets whose count was greater than our threshold of 3.
 
-1) We first defined an object model in C# to represent baskets and items. These map pretty closely to the provided basket.h and item.h files we provided, but use native C# elements. 
-While we were executing the a priori algorithm, we presented the items we had found and their respective counts as a dictionary where the key is the tuple containing the item set (one item on the first pass, a set of two items on the second pass, and a set of three items on the third pass). The value of the dictionary was the number of times that that set had appeared in the baskets we processed. 
+3) Timing our program yeilded the following results:
+         File read time: 424 milliseconds
+         Data analysis runtime: 110 milliseconds
+         Total Execution time: 534 milliseconds
 
-
-2) Tuples were helpful because they act as sets in C#, meaning that the order or repetition of the elements of set does not matter. The dictionary was a helpful structure because it allowed us to map each set to its count. Finally, C# made it very easy to filter the dictionary by items whose value was greater than our threshold number of 3.
-
-
-3) The processing time for our implementation was 786 milliseconds.
-
-
-4) The worst case complexity of our algorithm is O(b*i^3) where b= number of baskets and i= number of items. Average case complexity is much smaller because most baskets contain a small subset of the total number of items, and by the time we get to the third iteration, we have narrowed down the items we need to check to only items that appear in more than 3 baskets.
+4) The worst case complexity of our algorithm is O(b*i^3) where b is the number of baskets and i is the number of items. Average case complexity is much smaller because most baskets contain a small subset of the total number of items, and by the time we get to the third iteration, we have narrowed down the items we need to check to only items that appear in more than 3 baskets. This complexity is in regards to the entire algorithm, but does not exhaustively include the (generally neglibagle) complexity differences provided by C#'s helper methods, notably IEnumerable extension methods.
