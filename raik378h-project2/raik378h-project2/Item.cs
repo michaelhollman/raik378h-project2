@@ -8,8 +8,8 @@ namespace raik378h_project2
 {
     class Item
     {
-        int item_id;
-        string review;
+        public int item_id;
+        public string review;
 
         public void print()
         {

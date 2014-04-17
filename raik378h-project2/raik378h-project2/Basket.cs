@@ -8,11 +8,11 @@ namespace raik378h_project2
 {
     class Basket
     {
-        int customer_id;
-        string state;
-        string weekday;
-        int item_num;
-        List<Item> items;
+        public int customer_id;
+        public string state;
+        public string weekday;
+        public int item_num;
+        public List<Item> items;
 
         public void print()
         {
