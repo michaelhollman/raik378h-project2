@@ -36,25 +36,23 @@ namespace raik378h_project2
                 allBaskets.Add(Basket.ReadFromFile(i));
             }
 
-            Dictionary<HashSet<Item>, int> oneItemCount = new Dictionary<HashSet<Item>, int>();
-            Dictionary<HashSet<Item>, int> twoItemCount = new Dictionary<HashSet<Item>, int>();
-            Dictionary<HashSet<Item>, int> threeItemCount = new Dictionary<HashSet<Item>, int>();
+            Dictionary<int, int> oneItemCount = new Dictionary<int, int>();
+            Dictionary<HashSet<int>, int> twoItemCount = new Dictionary<HashSet<int>, int>();
+            Dictionary<HashSet<int>, int> threeItemCount = new Dictionary<HashSet<int>, int>();
 
             foreach (Basket basket in allBaskets)
             {
                 foreach (Item item in basket.Items)
                 {
-                    var itemSet = new HashSet<Item>();
-                    itemSet.Add(item);
+                    //var itemSet = new HashSet<Item>();
+                    //itemSet.Add(item);
 
                     //currentCount will be 0 (default value of int) if key id doesn't exist
                     int currentCount;
-                    oneItemCount.TryGetValue(itemSet, out currentCount);
-                    oneItemCount[itemSet] = currentCount + 1;
+                    oneItemCount.TryGetValue(item.ItemId, out currentCount);
+                    oneItemCount[item.ItemId] = currentCount + 1;
                 }
             }
-
-
 
             // get the item sets from the dictionary where count > new threshold value (on second pass, this will be 2, then 3, etc.)
             twoItemCount = twoItemCount.Where(i => i.Value >= threshold)
@@ -68,10 +66,10 @@ namespace raik378h_project2
                     {
                         for (int k = j + 1; k < basket.Items.Count; k++)
                         {
-                            var allThree = new HashSet<Item>();
-                            allThree.Add(basket.Items[i]);
-                            allThree.Add(basket.Items[j]);
-                            allThree.Add(basket.Items[k]);
+                            var allThree = new HashSet<int>();
+                            allThree.Add(basket.Items[i].ItemId);
+                            allThree.Add(basket.Items[j].ItemId);
+                            allThree.Add(basket.Items[k].ItemId);
 
                             /*if (threeItemCount.ContainsKey(allThree)){
                                 threeItemCount[allThree] 
@@ -85,17 +83,17 @@ namespace raik378h_project2
                             else
                             {
                                 // make jk, ik, and ij
-                                var jk = new HashSet<Item>();
-                                jk.Add(basket.Items[j]);
-                                jk.Add(basket.Items[k]);
+                                var jk = new HashSet<int>();
+                                jk.Add(basket.Items[j].ItemId);
+                                jk.Add(basket.Items[k].ItemId);
 
-                                var ik = new HashSet<Item>();
-                                ik.Add(basket.Items[i]);
-                                ik.Add(basket.Items[k]);
+                                var ik = new HashSet<int>();
+                                ik.Add(basket.Items[i].ItemId);
+                                ik.Add(basket.Items[k].ItemId);
 
-                                var ij = new HashSet<Item>();
-                                ij.Add(basket.Items[i]);
-                                ij.Add(basket.Items[j]);
+                                var ij = new HashSet<int>();
+                                ij.Add(basket.Items[i].ItemId);
+                                ij.Add(basket.Items[j].ItemId);
 
                                 // check if jk, ik, and ij are in 2itemcount
                                 if (twoItemCount.ContainsKey(jk) && twoItemCount.ContainsKey(ik) && twoItemCount.ContainsKey(ij))
