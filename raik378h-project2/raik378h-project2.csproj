@@ -48,6 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="sentiment.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="code\basket.c" />
+    <Content Include="code\basket.h" />
+    <Content Include="code\test.c" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
