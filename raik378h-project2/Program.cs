@@ -98,7 +98,11 @@ namespace raik378h_project2
                 }
             }
 
-            threeItemDict = threeItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
+            threeItemDict = threeItemDict.Where(i => i.Value >= threshold).Select(i =>
+                {
+                    var sorted = new SortedSet<int>(new int[] { i.Key.Item1, i.Key.Item2, i.Key.Item3 }).ToArray();
+                    return new KeyValuePair<Tuple<int, int, int>, int>(new Tuple<int, int, int>(sorted[0], sorted[1], sorted[2]), i.Value);
+                }).OrderBy(i => i.Key.Item1).ThenBy(i => i.Key.Item2).ThenBy(i => i.Key.Item3).ToDictionary(i => i.Key, i => i.Value);
 
             watch.Stop();
             var totalRunTime = watch.ElapsedMilliseconds;
