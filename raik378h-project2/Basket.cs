@@ -12,7 +12,6 @@ namespace raik378h_project2
         public int CustomerId { get; set; }
         public string State { get; set; }
         public string Weekday { get; set; }
-        // public int ItemNum { get; set; }
         public List<Item> Items { get; set; }
 
         public void Print()

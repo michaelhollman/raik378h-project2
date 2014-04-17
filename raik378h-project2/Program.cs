@@ -6,57 +6,56 @@ using System.Threading.Tasks;
 
 namespace raik378h_project2
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            //for (var i = 0; i < 2999; i++)
-            //{
-            //    var b = Basket.ReadFromFile(i);
-            //    b.Print();
-            //}
+            var threshold = 3;
 
+            Dictionary<int, int> oneItemDict = new Dictionary<int, int>();
+            Dictionary<Tuple<int, int>, int> twoItemDict = new Dictionary<Tuple<int, int>, int>();
+            Dictionary<Tuple<int, int, int>, int> threeItemDict = new Dictionary<Tuple<int, int, int>, int>();
 
-            /*
-             * 1) LET C1 = all Items that appear in the file D; 
-                2) FOR i : = 1 TO q DO BEGIN 
-                3) Fi := those sets in Ci that occur as least s times in D; 
-                4) IF i = q BREAK; 
-                5) LET Ci+1 = all itemsets S of size i+1 such that every 
-                subset of S of size i is in Fi 
-                6) END 
-             */
-
-
-            int threshold = 3;
             List<Basket> allBaskets = new List<Basket>();
-
             for (var i = 0; i < 3000; i++)
             {
                 allBaskets.Add(Basket.ReadFromFile(i));
             }
 
-            Dictionary<int, int> oneItemCount = new Dictionary<int, int>();
-            Dictionary<HashSet<int>, int> twoItemCount = new Dictionary<HashSet<int>, int>();
-            Dictionary<HashSet<int>, int> threeItemCount = new Dictionary<HashSet<int>, int>();
-
             foreach (Basket basket in allBaskets)
             {
                 foreach (Item item in basket.Items)
                 {
-                    //var itemSet = new HashSet<Item>();
-                    //itemSet.Add(item);
-
                     //currentCount will be 0 (default value of int) if key id doesn't exist
                     int currentCount;
-                    oneItemCount.TryGetValue(item.ItemId, out currentCount);
-                    oneItemCount[item.ItemId] = currentCount + 1;
+                    oneItemDict.TryGetValue(item.ItemId, out currentCount);
+                    oneItemDict[item.ItemId] = currentCount + 1;
+                }
+            }
+
+            oneItemDict = oneItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
+
+            // then go through each basket and if the basket has 2 items from the list of super special high frequency items, iterate count in new itemCount dict.
+            foreach (Basket basket in allBaskets)
+            {
+                for (int i = 0; i < basket.Items.Count - 1; i++)
+                {
+                    for (int j = i + 1; j < basket.Items.Count; j++)
+                    {
+                        if (oneItemDict.ContainsKey(basket.Items[i].ItemId) && oneItemDict.ContainsKey(basket.Items[j].ItemId))
+                        {
+                            var itemTuple = new Tuple<int, int>(basket.Items[i].ItemId, basket.Items[j].ItemId);
+
+                            int currentCount;
+                            twoItemDict.TryGetValue(itemTuple, out currentCount);
+                            twoItemDict[itemTuple] = currentCount + 1;
+                        }
+                    }
                 }
             }
 
             // get the item sets from the dictionary where count > new threshold value (on second pass, this will be 2, then 3, etc.)
-            twoItemCount = twoItemCount.Where(i => i.Value >= threshold)
-                    .ToDictionary(i => i.Key, i => i.Value);
+            twoItemDict = twoItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
 
             foreach (Basket basket in allBaskets)
             {
@@ -66,53 +65,46 @@ namespace raik378h_project2
                     {
                         for (int k = j + 1; k < basket.Items.Count; k++)
                         {
-                            var allThree = new HashSet<int>();
-                            allThree.Add(basket.Items[i].ItemId);
-                            allThree.Add(basket.Items[j].ItemId);
-                            allThree.Add(basket.Items[k].ItemId);
+                            var allThree = new Tuple<int, int, int>(basket.Items[i].ItemId, basket.Items[j].ItemId, basket.Items[k].ItemId);
 
-                            /*if (threeItemCount.ContainsKey(allThree)){
-                                threeItemCount[allThree] 
-                            }*/
                             int currentCount;
-                            threeItemCount.TryGetValue(allThree, out currentCount);
+                            threeItemDict.TryGetValue(allThree, out currentCount);
                             if (currentCount > 0)
                             {
-                                threeItemCount[allThree] = currentCount++;
+                                threeItemDict[allThree] = currentCount + 1;
                             }
                             else
                             {
                                 // make jk, ik, and ij
-                                var jk = new HashSet<int>();
-                                jk.Add(basket.Items[j].ItemId);
-                                jk.Add(basket.Items[k].ItemId);
-
-                                var ik = new HashSet<int>();
-                                ik.Add(basket.Items[i].ItemId);
-                                ik.Add(basket.Items[k].ItemId);
-
-                                var ij = new HashSet<int>();
-                                ij.Add(basket.Items[i].ItemId);
-                                ij.Add(basket.Items[j].ItemId);
+                                var jk = new Tuple<int, int>(basket.Items[j].ItemId, basket.Items[k].ItemId);
+                                var ik = new Tuple<int, int>(basket.Items[i].ItemId, basket.Items[k].ItemId);
+                                var ij = new Tuple<int, int>(basket.Items[i].ItemId, basket.Items[j].ItemId);
 
                                 // check if jk, ik, and ij are in 2itemcount
-                                if (twoItemCount.ContainsKey(jk) && twoItemCount.ContainsKey(ik) && twoItemCount.ContainsKey(ij))
+                                if (twoItemDict.ContainsKey(jk) && twoItemDict.ContainsKey(ik) && twoItemDict.ContainsKey(ij))
                                 {
                                     //if yes to all 3, add ijk to 3itemcount
-                                    threeItemCount[allThree] = currentCount++;
+                                    threeItemDict[allThree] = currentCount + 1;
                                 }
                             }
                         }
                     }
                 }
-
-                threeItemCount = threeItemCount.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
-
-
             }
 
-            Console.Read();
+            threeItemDict = threeItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
 
+            threeItemDict.ToList().ForEach(three =>
+            {
+                // TODO -- also send this to output file?
+                Console.WriteLine(string.Format("({0}, {1}, {2}) {3}", three.Key.Item1, three.Key.Item2, three.Key.Item3, three.Value));
+            });
+
+
+            // wait hack
+            Console.WriteLine();
+            Console.WriteLine("Press any key to quit.");
+            Console.ReadKey();
         }
     }
 }
