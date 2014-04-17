@@ -1,0 +1,14 @@
+﻿which means that the first set contains the items with the ids 134, 247, and 981, and this set appears in 3 baskets. Please describe the way that you represent the data to facilitate your computing (2points), and the reason (2points). Also record the processing time (1 points), and analyse the complexity (2 points). 
+
+
+1) We first defined an object model in C# to represent baskets and items. These map pretty closely to the provided basket.h and item.h files we provided, but use native C# elements. 
+While we were executing the a priori algorithm, we presented the items we had found and their respective counts as a dictionary where the key is the tuple containing the item set (one item on the first pass, a set of two items on the second pass, and a set of three items on the third pass). The value of the dictionary was the number of times that that set had appeared in the baskets we processed. 
+
+
+2) Tuples were helpful because they act as sets in C#, meaning that the order or repetition of the elements of set does not matter. The dictionary was a helpful structure because it allowed us to map each set to its count. Finally, C# made it very easy to filter the dictionary by items whose value was greater than our threshold number of 3.
+
+
+3) The processing time for our implementation was 786 milliseconds.
+
+
+4) The worst case complexity of our algorithm is O(b*i^3) where b= number of baskets and i= number of items. Average case complexity is much smaller because most baskets contain a small subset of the total number of items, and by the time we get to the third iteration, we have narrowed down the items we need to check to only items that appear in more than 3 baskets.

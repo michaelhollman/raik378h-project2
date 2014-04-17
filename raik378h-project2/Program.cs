@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace raik378h_project2
     {
         static void Main(string[] args)
         {
+            var watch = Stopwatch.StartNew();
+            
             var threshold = 3;
 
             Dictionary<int, int> oneItemDict = new Dictionary<int, int>();
@@ -94,12 +97,17 @@ namespace raik378h_project2
 
             threeItemDict = threeItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
 
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
             threeItemDict.ToList().ForEach(three =>
             {
                 // TODO -- also send this to output file?
                 Console.WriteLine(string.Format("({0}, {1}, {2}) {3}", three.Key.Item1, three.Key.Item2, three.Key.Item3, three.Value));
             });
 
+            Console.WriteLine("Number of 3 item sets: {0}", threeItemDict.Count);
+            Console.WriteLine("Execution time: {0} milliseconds", elapsedMs);
 
             // wait hack
             Console.WriteLine();
