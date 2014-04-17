@@ -10,11 +10,11 @@ namespace raik378h_project2
     {
         static void Main(string[] args)
         {
-            for (var i = 0; i < 2999; i++)
-            {
-                var b = Basket.ReadFromFile(i);
-                b.Print();
-            }
+            //for (var i = 0; i < 2999; i++)
+            //{
+            //    var b = Basket.ReadFromFile(i);
+            //    b.Print();
+            //}
 
 
             /*
@@ -27,34 +27,91 @@ namespace raik378h_project2
                 6) END 
              */
 
-            /*
+
             int threshold = 3;
             List<Basket> allBaskets = new List<Basket>();
-            Dictionary<HashSet<Item>, int> itemCount = new Dictionary<HashSet<Item>,int>();
-            
+
+            for (var i = 0; i < 3000; i++)
+            {
+                allBaskets.Add(Basket.ReadFromFile(i));
+            }
+
+            Dictionary<HashSet<Item>, int> oneItemCount = new Dictionary<HashSet<Item>, int>();
+            Dictionary<HashSet<Item>, int> twoItemCount = new Dictionary<HashSet<Item>, int>();
+            Dictionary<HashSet<Item>, int> threeItemCount = new Dictionary<HashSet<Item>, int>();
+
             foreach (Basket basket in allBaskets)
             {
-                foreach(Item item in basket.Items) 
+                foreach (Item item in basket.Items)
                 {
                     var itemSet = new HashSet<Item>();
                     itemSet.Add(item);
-                    
+
                     //currentCount will be 0 (default value of int) if key id doesn't exist
                     int currentCount;
-                    itemCount.TryGetValue(itemSet, out currentCount);
-                    itemCount[itemSet] = currentCount + 1;
+                    oneItemCount.TryGetValue(itemSet, out currentCount);
+                    oneItemCount[itemSet] = currentCount + 1;
                 }
             }
-            
+
+
+
             // get the item sets from the dictionary where count > new threshold value (on second pass, this will be 2, then 3, etc.)
-            // then go through each basket and if the basket has 2 Items from the list of super special high frequency Items, iterate count in new itemCount dict.
+            twoItemCount = twoItemCount.Where(i => i.Value >= threshold)
+                    .ToDictionary(i => i.Key, i => i.Value);
+
+            foreach (Basket basket in allBaskets)
+            {
+                for (int i = 0; i < basket.Items.Count - 2; i++)
+                {
+                    for (int j = i + 1; j < basket.Items.Count - 1; j++)
+                    {
+                        for (int k = j + 1; k < basket.Items.Count; k++)
+                        {
+                            var allThree = new HashSet<Item>();
+                            allThree.Add(basket.Items[i]);
+                            allThree.Add(basket.Items[j]);
+                            allThree.Add(basket.Items[k]);
+
+                            /*if (threeItemCount.ContainsKey(allThree)){
+                                threeItemCount[allThree] 
+                            }*/
+                            int currentCount;
+                            threeItemCount.TryGetValue(allThree, out currentCount);
+                            if (currentCount > 0)
+                            {
+                                threeItemCount[allThree] = currentCount++;
+                            }
+                            else
+                            {
+                                // make jk, ik, and ij
+                                var jk = new HashSet<Item>();
+                                jk.Add(basket.Items[j]);
+                                jk.Add(basket.Items[k]);
+
+                                var ik = new HashSet<Item>();
+                                ik.Add(basket.Items[i]);
+                                ik.Add(basket.Items[k]);
+
+                                var ij = new HashSet<Item>();
+                                ij.Add(basket.Items[i]);
+                                ij.Add(basket.Items[j]);
+
+                                // check if jk, ik, and ij are in 2itemcount
+                                if (twoItemCount.ContainsKey(jk) && twoItemCount.ContainsKey(ik) && twoItemCount.ContainsKey(ij))
+                                {
+                                    //if yes to all 3, add ijk to 3itemcount
+                                    threeItemCount[allThree] = currentCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                threeItemCount = threeItemCount.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
 
 
-
-
-            List<Item> c1 = new List<Item>();
-            */
-
+            }
 
             Console.Read();
 
