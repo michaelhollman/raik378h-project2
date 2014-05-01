@@ -142,8 +142,38 @@ namespace raik378h_project2
             watch.Stop();
             var totalRunTime = watch.ElapsedMilliseconds;
 
-            File.WriteAllLines(@"../../output.txt", lines);
+            var linesForD3 = threeItemDict.Select(d =>
+            {
+                var daysToSentiments = new Dictionary<string, int>();
+                threeItemBaskets[d.Key].ForEach(b =>
+                {
+                    if (!daysToSentiments.ContainsKey(b.Weekday))
+                        daysToSentiments.Add(b.Weekday, 0);
 
+                    b.Items.Where(i => d.Key.Item1 == i.ItemId || d.Key.Item2 == i.ItemId || d.Key.Item3 == i.ItemId).ToList().ForEach(i =>
+                    {
+                        daysToSentiments[b.Weekday] = daysToSentiments[b.Weekday] + i.Review.Split(' ').Sum(w => sentiments.ContainsKey(w) ? sentiments[w] : 0);
+                    });
+                });
+                daysToSentiments = daysToSentiments.OrderBy(kvp => DayOfWeekToInt(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+                var detais = new StringBuilder();
+                daysToSentiments.ToList().ForEach(ds => detais.AppendFormat(" {0} {1}", ds.Key, ds.Value));
+
+                return string.Format("{0}, {1}, {2}, {3}, {4}", d.Key.Item1, d.Key.Item2, d.Key.Item3, d.Value, detais.ToString().Trim());
+            });
+
+            //File.WriteAllLines(@"../../outputD3.txt", lines);
+            using (StreamWriter sw = File.AppendText(@"../../outputD3.csv"))
+            {
+                sw.WriteLine("item1,item2,item3,basketCount,frequency");
+                foreach (var line in linesForD3)
+                {
+                    sw.WriteLine(line);
+                }
+            }	
+            //File.AppendText("item1, item2, item3, basketCount, frequency");
+            File.AppendAllLines(@"../../output.csv", lines);
             Console.WriteLine("Number of 3 item sets: {0}", threeItemBaskets.Count);
             Console.WriteLine("File read time: {0}", fileReadTime);
             Console.WriteLine("Data analysis runtime: {0}", totalRunTime - fileReadTime);

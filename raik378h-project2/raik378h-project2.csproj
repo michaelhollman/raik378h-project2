@@ -48,12 +48,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="outputD3.csv" />
     <None Include="sentiment.csv" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="code\basket.c" />
     <Content Include="code\basket.h" />
     <Content Include="code\test.c" />
+    <Content Include="d3\d3.v3.js" />
+    <Content Include="d3\index.html" />
+    <Content Include="d3\style.css" />
+    <Content Include="d3\visuals.js" />
     <Content Include="output.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
