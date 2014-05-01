@@ -26,11 +26,11 @@ var rows = d3.csv("outputD3.csv", function (d) {
     };
 }, function (error, rows) {
     console.log(error);
-    
+
     var sentimentScale = d3.scale.linear()
         .range([-100, height])
         .domain([-100, 100]);
-    
+
     var dayScale = d3.scale.ordinal()
         .rangePoints([1, 7])
         .domain(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]);
@@ -38,11 +38,11 @@ var rows = d3.csv("outputD3.csv", function (d) {
     var xAxis = d3.svg.axis()
         .scale(dayScale)
         .orient("bottom");
-    
+
     var yAxis = d3.svg.axis()
         .scale(sentimentScale)
         .orient("left");
-    
+
     chart.append("g")
 	    .attr("class", "axis")
 	    .attr("transform", "translate(0, " + 100 + ")")
@@ -55,18 +55,18 @@ var rows = d3.csv("outputD3.csv", function (d) {
         .attr("cx", function (d) { return dayScale(d.frequency[0]); })
         .attr("cy", function (d) { return sentimentScale(d.frequency[1]) })
         .attr("r", 3);
- /*   .on("mouseover", function (d, i) {
-        var tipy = d3.select(this).attr("cy");
-        d3.select(this).style("fill", "#f60");
-        var tipx = d3.select(this).attr("cx");
-        tooltip.attr("x", tipx);
-        tooltip.attr("y", tipy);
-        tooltip.attr("dx", 50);
-        tooltip.attr("dy", -20);
-        tooltip.style("font-size", "40px");
-        tooltip.style("visibility", "visible");
-        tooltip.style("fill", "black");
-        tooltip.text(d.state + ": " + Math.round((d.gdp / d.population) * 1000) / 1000);
-        chart.append("tooltip");
-    })*/
+    /*   .on("mouseover", function (d, i) {
+           var tipy = d3.select(this).attr("cy");
+           d3.select(this).style("fill", "#f60");
+           var tipx = d3.select(this).attr("cx");
+           tooltip.attr("x", tipx);
+           tooltip.attr("y", tipy);
+           tooltip.attr("dx", 50);
+           tooltip.attr("dy", -20);
+           tooltip.style("font-size", "40px");
+           tooltip.style("visibility", "visible");
+           tooltip.style("fill", "black");
+           tooltip.text(d.state + ": " + Math.round((d.gdp / d.population) * 1000) / 1000);
+           chart.append("tooltip");
+       })*/
 });

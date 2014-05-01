@@ -103,9 +103,6 @@ namespace raik378h_project2
                 }
             }
 
-            //threeItemDict = threeItemDict.Where(i => i.Value >= threshold).ToDictionary(i => i.Key, i => i.Value);
-            //threeItemBaskets = threeItemBaskets.Where(i => threeItemDict.ContainsKey(i.Key)).ToDictionary(i => i.Key, i => i.Value);
-
             threeItemDict = threeItemDict.Where(i => i.Value >= threshold).Select(i =>
             {
                 var sorted = new SortedSet<int>(new int[] { i.Key.Item1, i.Key.Item2, i.Key.Item3 }).ToArray();
@@ -117,8 +114,11 @@ namespace raik378h_project2
                 return new KeyValuePair<Tuple<int, int, int>, List<Basket>>(new Tuple<int, int, int>(sorted[0], sorted[1], sorted[2]), i.Value);
             }).Where(i => threeItemDict.ContainsKey(i.Key)).OrderBy(i => i.Key.Item1).ThenBy(i => i.Key.Item2).ThenBy(i => i.Key.Item3).ToDictionary(i => i.Key, i => i.Value);
 
+            var output = new StringBuilder();
+            var d3output = new StringBuilder();
+            d3output.AppendLine("itemset\tday\tscore");
 
-            var lines = threeItemDict.Select(d =>
+            threeItemDict.ToList().ForEach(d =>
                 {
                     var daysToSentiments = new Dictionary<string, int>();
                     threeItemBaskets[d.Key].ForEach(b =>
@@ -133,47 +133,21 @@ namespace raik378h_project2
                         });
                     daysToSentiments = daysToSentiments.OrderBy(kvp => DayOfWeekToInt(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                    var detais = new StringBuilder();
-                    daysToSentiments.ToList().ForEach(ds => detais.AppendFormat(" {0} {1}", ds.Key, ds.Value));
+                    var outputDetails = new StringBuilder();
+                    daysToSentiments.ToList().ForEach(ds => outputDetails.AppendFormat(" {0} {1}", ds.Key, ds.Value));
+                    output.AppendLine(string.Format("({0}, {1}, {2}) {3}", d.Key.Item1, d.Key.Item2, d.Key.Item3, outputDetails.ToString().Trim()));
 
-                    return string.Format("({0}, {1}, {2}) {3} {4}", d.Key.Item1, d.Key.Item2, d.Key.Item3, d.Value, detais.ToString().Trim());
+                    daysToSentiments.ToList().ForEach(dts =>
+                        {
+                            d3output.AppendLine(string.Format("{{{0}, {1}, {2}}}\t{3}\t{4}", d.Key.Item1, d.Key.Item2, d.Key.Item3, dts.Key, dts.Value));
+                        });
                 });
-
             watch.Stop();
             var totalRunTime = watch.ElapsedMilliseconds;
 
-            var linesForD3 = threeItemDict.Select(d =>
-            {
-                var daysToSentiments = new Dictionary<string, int>();
-                threeItemBaskets[d.Key].ForEach(b =>
-                {
-                    if (!daysToSentiments.ContainsKey(b.Weekday))
-                        daysToSentiments.Add(b.Weekday, 0);
+            File.WriteAllText(@"../../output.txt", output.ToString());
+            File.WriteAllText(@"../../d3-output.tsv", d3output.ToString());
 
-                    b.Items.Where(i => d.Key.Item1 == i.ItemId || d.Key.Item2 == i.ItemId || d.Key.Item3 == i.ItemId).ToList().ForEach(i =>
-                    {
-                        daysToSentiments[b.Weekday] = daysToSentiments[b.Weekday] + i.Review.Split(' ').Sum(w => sentiments.ContainsKey(w) ? sentiments[w] : 0);
-                    });
-                });
-                daysToSentiments = daysToSentiments.OrderBy(kvp => DayOfWeekToInt(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-                var detais = new StringBuilder();
-                daysToSentiments.ToList().ForEach(ds => detais.AppendFormat(" {0} {1}", ds.Key, ds.Value));
-
-                return string.Format("{0}, {1}, {2}, {3}, {4}", d.Key.Item1, d.Key.Item2, d.Key.Item3, d.Value, detais.ToString().Trim());
-            });
-
-            //File.WriteAllLines(@"../../outputD3.txt", lines);
-            using (StreamWriter sw = File.AppendText(@"../../outputD3.csv"))
-            {
-                sw.WriteLine("item1,item2,item3,basketCount,frequency");
-                foreach (var line in linesForD3)
-                {
-                    sw.WriteLine(line);
-                }
-            }	
-            //File.AppendText("item1, item2, item3, basketCount, frequency");
-            File.AppendAllLines(@"../../output.csv", lines);
             Console.WriteLine("Number of 3 item sets: {0}", threeItemBaskets.Count);
             Console.WriteLine("File read time: {0}", fileReadTime);
             Console.WriteLine("Data analysis runtime: {0}", totalRunTime - fileReadTime);
