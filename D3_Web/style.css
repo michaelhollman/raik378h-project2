@@ -8,7 +8,7 @@
 }
 
 .axis {
-  font: 40px sans-serif;
+  font: 12px sans-serif;
 }
 
 .axis path,
@@ -16,8 +16,4 @@
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
-}
-
-.population.axis path {
-  display: none;
 }
