@@ -1,0 +1,21 @@
+circle { 
+    fill: blue; 
+} 
+text { 
+    fill: black; 
+    font: 14px sans-serif; 
+    text-anchor: middle;
+}
+circle.selectedCircle{
+	fill: orange;
+}
+.axis text {
+  font: 12px sans-serif;
+  fill: #000000;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
